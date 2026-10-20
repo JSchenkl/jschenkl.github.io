@@ -18,44 +18,68 @@ function isWebGLAvailable() {
   }
 }
 
-function buildOrbitRing() {
-  const ring = new THREE.Mesh(
-    new THREE.RingGeometry(ORBIT_RADIUS - 0.025, ORBIT_RADIUS + 0.025, 48),
-    new THREE.MeshBasicMaterial({ color: ACCENT_COLOR, transparent: true, opacity: 0.25, side: THREE.DoubleSide })
-  );
-  ring.rotation.x = -Math.PI / 2;
-  ring.position.y = -0.01;
-  return ring;
-}
-
-// Soft round puff texture, drawn once on an offscreen canvas — no image
-// asset needed for the smoke sprites.
+// Irregular puff texture: several overlapping, randomly offset radial
+// blobs instead of one perfect circle, so puffs read as turbulent smoke
+// rather than flat dots. Pre-rendering a handful of variants (instead of
+// redrawing per spawn) keeps this cheap while still giving visual variety.
 function buildSmokeTexture() {
-  const size = 64;
+  const size = 96;
   const c = document.createElement('canvas');
   c.width = size;
   c.height = size;
   const ctx = c.getContext('2d');
-  const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-  gradient.addColorStop(0, 'rgba(230,230,235,0.9)');
-  gradient.addColorStop(0.5, 'rgba(200,200,210,0.45)');
-  gradient.addColorStop(1, 'rgba(200,200,210,0)');
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, size, size);
+  const mid = size / 2;
+  const blobCount = 5 + Math.floor(Math.random() * 3);
+
+  for (let i = 0; i < blobCount; i += 1) {
+    const angle = Math.random() * Math.PI * 2;
+    const dist = Math.random() * mid * 0.45;
+    const bx = mid + Math.cos(angle) * dist;
+    const by = mid + Math.sin(angle) * dist;
+    const r = mid * (0.45 + Math.random() * 0.4);
+    const warmth = Math.random();
+    const rC = 205 + warmth * 20;
+    const gC = 200 + warmth * 10;
+    const bC = 195 - warmth * 15;
+    const gradient = ctx.createRadialGradient(bx, by, 0, bx, by, r);
+    gradient.addColorStop(0, `rgba(${rC},${gC},${bC},0.55)`);
+    gradient.addColorStop(0.6, `rgba(${rC},${gC},${bC},0.28)`);
+    gradient.addColorStop(1, `rgba(${rC},${gC},${bC},0)`);
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(bx, by, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
   return new THREE.CanvasTexture(c);
 }
 
-function createSmokeSystem(scene, texture) {
+function buildSmokeTextures(count = 4) {
+  return Array.from({ length: count }, buildSmokeTexture);
+}
+
+function createSmokeSystem(scene, textures) {
   const puffs = [];
 
   function spawn(position) {
-    const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false, opacity: 0.55 });
+    const texture = textures[Math.floor(Math.random() * textures.length)];
+    const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false, opacity: 0.6 });
     const sprite = new THREE.Sprite(material);
+    sprite.material.rotation = Math.random() * Math.PI * 2;
     sprite.position.copy(position);
-    sprite.position.y = 0.015;
-    sprite.scale.setScalar(0.04);
+    sprite.position.y = 0.01 + Math.random() * 0.01;
+    sprite.scale.setScalar(0.035 + Math.random() * 0.015);
     scene.add(sprite);
-    puffs.push({ sprite, born: performance.now() });
+    puffs.push({
+      sprite,
+      born: performance.now(),
+      baseX: position.x,
+      baseZ: position.z,
+      driftX: (Math.random() - 0.5) * 0.00004,
+      driftZ: (Math.random() - 0.5) * 0.00004,
+      spin: (Math.random() - 0.5) * 0.0015,
+      startScale: sprite.scale.x,
+    });
   }
 
   function update(now) {
@@ -69,9 +93,13 @@ function createSmokeSystem(scene, texture) {
         continue;
       }
       const t = age / SMOKE_LIFETIME_MS;
-      p.sprite.material.opacity = 0.55 * (1 - t);
-      p.sprite.scale.setScalar(0.04 + t * 0.16);
-      p.sprite.position.y = 0.015 + t * 0.05;
+      const ease = 1 - (1 - t) * (1 - t);
+      p.sprite.material.opacity = 0.6 * (1 - t);
+      p.sprite.scale.setScalar(p.startScale + ease * 0.2);
+      p.sprite.position.x = p.baseX + p.driftX * age;
+      p.sprite.position.z = p.baseZ + p.driftZ * age;
+      p.sprite.position.y = 0.01 + ease * 0.06;
+      p.sprite.material.rotation += p.spin;
     }
   }
 
@@ -122,13 +150,11 @@ export function initAboutScene({ canvas, panel, onFail }) {
   rim.position.set(-1.2, 0.8, -1.2);
   scene.add(rim);
 
-  scene.add(buildOrbitRing());
-
   const car = new THREE.Group();
   scene.add(car);
 
-  const smokeTexture = buildSmokeTexture();
-  const smoke = createSmokeSystem(scene, smokeTexture);
+  const smokeTextures = buildSmokeTextures();
+  const smoke = createSmokeSystem(scene, smokeTextures);
 
   function resize() {
     const w = canvas.parentElement.clientWidth;
