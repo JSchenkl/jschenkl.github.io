@@ -237,6 +237,7 @@ section {
   aspect-ratio: 1 / 1;
   background: var(--color-bg-panel);
   overflow: hidden;
+  border-radius: 59% 41% 63% 37% / 44% 55% 45% 56%;
 }
 
 #about-canvas {
