@@ -15,7 +15,8 @@ body {
   bottom: 0;
   height: var(--ticker-height);
   z-index: var(--z-ticker);
-  pointer-events: none;
+  display: block;
+  cursor: pointer;
   overflow: hidden;
   background: linear-gradient(to top, rgba(10, 10, 12, 0.6), rgba(10, 10, 12, 0));
   border-top: 1px solid var(--color-border-grey);
@@ -25,6 +26,26 @@ body {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+.car-ticker-hint {
+  position: absolute;
+  top: 50%;
+  right: var(--space-md);
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  color: var(--color-racing-red);
+  text-shadow: 0 0 10px rgba(225, 6, 0, 0.6);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+#car-ticker:hover .car-ticker-hint,
+#car-ticker:focus-visible .car-ticker-hint {
+  opacity: 1;
 }
 
 .wrap {
