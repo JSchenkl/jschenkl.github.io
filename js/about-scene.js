@@ -9,8 +9,8 @@ const CAR_SIZE = 0.4;
 // the pivot, the car's heading IS its spin angle (not tangent-to-a-circle),
 // and the smoke comes off the rear tires sweeping the widest arc.
 const SPIN_SPEED = 0.0027; // rad/ms, base
-const FRONT_SETBACK = CAR_SIZE * 0.26; // car-center to front-pivot distance
-const TAIL_SETBACK = CAR_SIZE * 0.32; // car-center to rear/smoke-origin distance
+const FRONT_SETBACK = CAR_SIZE * 0.42; // car-center to front-pivot distance
+const TAIL_SETBACK = CAR_SIZE * 0.58; // car-center to rear/smoke-origin distance
 const HEADING_CALIBRATION = Math.PI / 2; // aligns the model's nose with the spin direction
 const SMOKE_INTERVAL_MS = 90;
 const SMOKE_LIFETIME_MS = 1500;
@@ -144,7 +144,7 @@ export function initAboutScene({ canvas, panel, onFail }) {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 20);
-  camera.position.set(0, 0.95, 1.1);
+  camera.position.set(0, 1.5, 1.75);
   camera.lookAt(0, 0.05, 0);
 
   const key = new THREE.DirectionalLight(0xffffff, 1.15);
@@ -200,7 +200,7 @@ export function initAboutScene({ canvas, panel, onFail }) {
     // constant rate, so it doesn't feel metronomic.
     const speedWobble =
       1 + 0.2 * Math.sin(now * 0.00026) + 0.08 * Math.sin(now * 0.00061 + 2.1);
-    spinAngle += dt * SPIN_SPEED * speedWobble;
+    spinAngle -= dt * SPIN_SPEED * speedWobble;
 
     // Front-pivot wobble: the grip point isn't perfectly fixed, it walks
     // a little, and its distance from the car's center varies slightly too.
