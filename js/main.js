@@ -100,30 +100,14 @@ function hideTicker() {
   document.body.style.paddingBottom = '0';
 }
 
+const tickerHit = document.getElementById('ticker-hit');
+
 if (reduceMotion) {
   hideTicker();
 } else {
   import('./ticker-scene.js')
     .then(({ initTickerScene }) => {
-      initTickerScene({ canvas: tickerCanvas, bar: tickerBar, onFail: hideTicker });
+      initTickerScene({ canvas: tickerCanvas, bar: tickerBar, hitArea: tickerHit, onFail: hideTicker });
     })
     .catch(hideTicker);
-}
-
-const aboutSection = document.getElementById('about');
-const aboutCanvas = document.getElementById('about-canvas');
-const aboutPanel = document.querySelector('.about-visual');
-
-function hideAboutVisual() {
-  if (aboutSection) aboutSection.classList.add('no-visual');
-}
-
-if (reduceMotion) {
-  hideAboutVisual();
-} else {
-  import('./about-scene.js')
-    .then(({ initAboutScene }) => {
-      initAboutScene({ canvas: aboutCanvas, panel: aboutPanel, onFail: hideAboutVisual });
-    })
-    .catch(hideAboutVisual);
 }

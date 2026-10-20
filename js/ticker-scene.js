@@ -18,7 +18,7 @@ function isWebGLAvailable() {
 // Small decorative side-view scene: the car drives across the bottom bar
 // on a loop. Purely cosmetic, so on any failure we just hide the bar
 // rather than showing a fallback.
-export function initTickerScene({ canvas, bar, onFail }) {
+export function initTickerScene({ canvas, bar, hitArea, onFail }) {
   const fail = () => {
     if (onFail) onFail();
     else if (bar) bar.style.display = 'none';
@@ -83,6 +83,9 @@ export function initTickerScene({ canvas, bar, onFail }) {
     running = !document.hidden;
   });
 
+  let carReady = false;
+  if (hitArea) hitArea.style.display = 'none';
+
   let lastTime = performance.now();
   function animate(now) {
     requestAnimationFrame(animate);
@@ -95,6 +98,12 @@ export function initTickerScene({ canvas, bar, onFail }) {
       car.position.x = -halfRange;
     }
 
+    if (hitArea && carReady) {
+      const containerW = canvas.parentElement.clientWidth;
+      const pxX = ((car.position.x + viewWidth / 2) / viewWidth) * containerW;
+      hitArea.style.left = `${pxX}px`;
+    }
+
     renderer.render(scene, camera);
   }
   requestAnimationFrame(animate);
@@ -103,6 +112,8 @@ export function initTickerScene({ canvas, bar, onFail }) {
     .then((model) => {
       normalizeModel(model, CAR_SIZE);
       car.add(model);
+      carReady = true;
+      if (hitArea) hitArea.style.display = 'block';
     })
     .catch(fail);
 }

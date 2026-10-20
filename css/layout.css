@@ -15,8 +15,7 @@ body {
   bottom: 0;
   height: var(--ticker-height);
   z-index: var(--z-ticker);
-  display: block;
-  cursor: pointer;
+  pointer-events: none;
   overflow: hidden;
   background: linear-gradient(to top, rgba(10, 10, 12, 0.6), rgba(10, 10, 12, 0));
   border-top: 1px solid var(--color-border-grey);
@@ -28,23 +27,38 @@ body {
   display: block;
 }
 
-.car-ticker-hint {
+/* Precise click target tracking the car's on-screen position — not the
+   whole bar — positioned/sized every frame by ticker-scene.js. */
+#ticker-hit {
   position: absolute;
   top: 50%;
-  right: var(--space-md);
-  transform: translateY(-50%);
+  left: 0;
+  width: 70px;
+  height: 70%;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  cursor: pointer;
+  display: block;
+}
+
+.car-ticker-hint {
+  position: absolute;
+  top: -1.4em;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: var(--font-display);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   letter-spacing: 0.05em;
   color: var(--color-racing-red);
   text-shadow: 0 0 10px rgba(225, 6, 0, 0.6);
   opacity: 0;
   transition: opacity 0.2s ease;
   pointer-events: none;
+  white-space: nowrap;
 }
 
-#car-ticker:hover .car-ticker-hint,
-#car-ticker:focus-visible .car-ticker-hint {
+#ticker-hit:hover .car-ticker-hint,
+#ticker-hit:focus-visible .car-ticker-hint {
   opacity: 1;
 }
 
@@ -239,50 +253,11 @@ section {
 }
 
 /* About */
-.about-wrap {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: var(--space-xl);
-  align-items: center;
-}
-
 #about .about-body {
   max-width: 68ch;
   color: var(--color-text-primary);
   font-size: 1.1rem;
   line-height: 1.7;
-}
-
-.about-visual {
-  position: relative;
-  aspect-ratio: 1 / 1;
-}
-
-#about-canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-#about.no-visual .about-wrap {
-  grid-template-columns: 1fr;
-}
-
-#about.no-visual .about-visual {
-  display: none;
-}
-
-@media (max-width: 1024px) {
-  .about-wrap {
-    grid-template-columns: 1fr;
-  }
-
-  .about-visual {
-    order: -1;
-    max-width: 360px;
-    margin-inline: auto;
-    width: 100%;
-  }
 }
 
 /* Skills */

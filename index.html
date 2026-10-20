@@ -74,17 +74,12 @@
   </section>
 
   <section id="about">
-    <div class="wrap about-wrap">
-      <div class="about-copy">
-        <p class="section-kicker">01 / Über mich</p>
-        <h2 class="section-heading reveal">About Me</h2>
-        <p class="about-body reveal">
-          Ich bin Schüler — aktuell <span id="school-grade">6. Klasse (Schuljahr 2026/2027)</span> — und wohne in München. Ich bin <span id="age">11</span> Jahre alt und begeistere mich für Rennsport und Autos, allgemein bin ich sehr technikinteressiert. Das zeigt sich auch in den Projekten unten: von 3D-Fahrphysik mit Three.js über einen 2D-Strecken-Editor mit Gamepad-Support bis zu praktischen Web-Tools. Die Rennspiele baue ich zusammen mit meinem Vater Mark. Neben dem Programmieren bin ich sportlich unterwegs — Radfahren, Schwimmen, Joggen, am liebsten Ausdauersport.
-        </p>
-      </div>
-      <div class="about-visual reveal">
-        <canvas id="about-canvas"></canvas>
-      </div>
+    <div class="wrap">
+      <p class="section-kicker">01 / Über mich</p>
+      <h2 class="section-heading reveal">About Me</h2>
+      <p class="about-body reveal">
+        Ich bin Schüler — aktuell <span id="school-grade">6. Klasse (Schuljahr 2026/2027)</span> — und wohne in München. Ich bin <span id="age">11</span> Jahre alt und begeistere mich für Rennsport und Autos, allgemein bin ich sehr technikinteressiert. Das zeigt sich auch in den Projekten unten: von 3D-Fahrphysik mit Three.js über einen 2D-Strecken-Editor mit Gamepad-Support bis zu praktischen Web-Tools. Die Rennspiele baue ich zusammen mit meinem Vater Mark. Neben dem Programmieren bin ich sportlich unterwegs — Radfahren, Schwimmen, Joggen, am liebsten Ausdauersport.
+      </p>
     </div>
   </section>
 
@@ -187,10 +182,12 @@
 
 </main>
 
-<a id="car-ticker" href="https://jschenkl.github.io/bmw-m4-3d-spiel/" target="_blank" rel="noopener" aria-label="BMW M4 GT3 3D-Rennspiel spielen">
+<div id="car-ticker" aria-hidden="true">
   <canvas id="ticker-canvas"></canvas>
-  <span class="car-ticker-hint">▶ Spielen</span>
-</a>
+  <a id="ticker-hit" href="https://jschenkl.github.io/bmw-m4-3d-spiel/" target="_blank" rel="noopener" aria-label="BMW M4 GT3 3D-Rennspiel spielen">
+    <span class="car-ticker-hint">▶ Spielen</span>
+  </a>
+</div>
 
 <footer id="site-footer">
   <div class="wrap">
