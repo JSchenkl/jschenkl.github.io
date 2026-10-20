@@ -38,6 +38,48 @@
   transform: translateY(-4px);
 }
 
+/* Pulsing "LIVE" indicator dot */
+@keyframes live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(31, 174, 90, 0.55); }
+  50% { box-shadow: 0 0 0 5px rgba(31, 174, 90, 0); }
+}
+
+.demo-card .live-dot {
+  animation: live-pulse 1.8s ease-out infinite;
+}
+
+/* HUD frame glow + lift on hover (cards, skill tiles) */
+.hud-frame {
+  transition: box-shadow 0.25s ease;
+}
+
+.hud-frame:hover,
+.hud-frame:focus-within {
+  box-shadow: 0 10px 28px -14px rgba(225, 6, 0, 0.55);
+}
+
+.skill-tile {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.skill-tile:hover {
+  transform: translateY(-3px);
+}
+
+/* Hero entrance on load */
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-copy {
+  animation: hero-fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-visual {
+  animation: hero-fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+}
+
 /* Scroll-reveal */
 .reveal {
   opacity: 0;

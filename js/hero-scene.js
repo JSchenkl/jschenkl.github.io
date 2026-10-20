@@ -2,11 +2,15 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
-const YAW_RANGE = 0.4;
-const PITCH_RANGE = 0.12;
-const LERP_FACTOR = 0.06;
-const IDLE_TIMEOUT_MS = 2500;
-const AUTO_ROTATE_SPEED = 0.002;
+const YAW_RANGE = 0.7;
+const PITCH_RANGE = 0.22;
+const LERP_FACTOR = 0.12;
+const IDLE_TIMEOUT_MS = 2000;
+const AUTO_ROTATE_SPEED = 0.003;
+const BOB_AMPLITUDE = 0.035;
+const BOB_SPEED = 0.0014;
+const RIM_PULSE_AMOUNT = 0.5;
+const RIM_PULSE_SPEED = 0.0022;
 const ACCENT_COLOR = 0xe10600;
 const CAR_MODEL_URL = 'assets/models/bmw_m4_gt3.glb';
 const TARGET_SIZE = 2.6; // longest model dimension, in scene units, after normalization
@@ -85,6 +89,7 @@ export function initHeroScene({ canvas, fallback, reduceMotion }) {
   scene.add(fill);
 
   const rim = new THREE.PointLight(ACCENT_COLOR, 1.4, 10);
+  const rimBaseIntensity = rim.intensity;
   rim.position.set(-2, 1, -2);
   scene.add(rim);
 
@@ -148,7 +153,8 @@ export function initHeroScene({ canvas, fallback, reduceMotion }) {
       return;
     }
 
-    const idleFor = performance.now() - lastPointerMove;
+    const now = performance.now();
+    const idleFor = now - lastPointerMove;
     const wantsAutoRotate = isTouch || idleFor > IDLE_TIMEOUT_MS;
     autoRotateWeight += ((wantsAutoRotate ? 1 : 0) - autoRotateWeight) * 0.03;
     autoAngle += AUTO_ROTATE_SPEED;
@@ -156,6 +162,8 @@ export function initHeroScene({ canvas, fallback, reduceMotion }) {
     const blendedYaw = targetYaw * (1 - autoRotateWeight) + autoAngle * autoRotateWeight;
     car.rotation.y += (blendedYaw - car.rotation.y) * LERP_FACTOR;
     car.rotation.x += (targetPitch * (1 - autoRotateWeight) - car.rotation.x) * LERP_FACTOR;
+    car.position.y = Math.sin(now * BOB_SPEED) * BOB_AMPLITUDE;
+    rim.intensity = rimBaseIntensity + Math.sin(now * RIM_PULSE_SPEED) * RIM_PULSE_AMOUNT;
 
     renderer.render(scene, camera);
   }

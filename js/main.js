@@ -58,7 +58,27 @@ function animateSkillBars() {
 }
 animateSkillBars();
 
-initGithubProjects();
+const revealObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+);
+
+function observeReveals(root = document) {
+  root.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
+}
+observeReveals();
+
+initGithubProjects().then(() => {
+  document.querySelectorAll('#projects-grid > *').forEach((el) => el.classList.add('reveal'));
+  observeReveals();
+});
 
 const canvas = document.getElementById('hero-canvas');
 const fallback = document.getElementById('hero-fallback');
