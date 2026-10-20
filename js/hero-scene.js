@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 const YAW_RANGE = 0.4;
 const PITCH_RANGE = 0.12;
@@ -6,6 +8,8 @@ const LERP_FACTOR = 0.06;
 const IDLE_TIMEOUT_MS = 2500;
 const AUTO_ROTATE_SPEED = 0.002;
 const ACCENT_COLOR = 0xe10600;
+const CAR_MODEL_URL = 'assets/models/bmw_m4_gt3.glb';
+const TARGET_SIZE = 2.6; // longest model dimension, in scene units, after normalization
 
 function isWebGLAvailable() {
   try {
@@ -14,60 +18,6 @@ function isWebGLAvailable() {
   } catch (e) {
     return false;
   }
-}
-
-function buildCar() {
-  const car = new THREE.Group();
-
-  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x16161a, roughness: 0.4, metalness: 0.6 });
-  const accentMat = new THREE.MeshStandardMaterial({
-    color: ACCENT_COLOR,
-    roughness: 0.3,
-    metalness: 0.5,
-    emissive: ACCENT_COLOR,
-    emissiveIntensity: 0.15,
-  });
-
-  const body = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.45, 1.0), bodyMat);
-  body.position.y = 0.35;
-  car.add(body);
-
-  const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.4, 0.85), bodyMat);
-  cabin.position.set(-0.1, 0.72, 0);
-  car.add(cabin);
-
-  const nose = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.2, 0.95), accentMat);
-  nose.position.set(1.25, 0.3, 0);
-  car.add(nose);
-
-  const spoiler = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.25, 1.1), accentMat);
-  spoiler.position.set(-1.2, 0.65, 0);
-  car.add(spoiler);
-
-  const wheelGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.28, 16);
-  const wheelMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0c, roughness: 0.8 });
-  const wheelPositions = [
-    [0.8, 0.1, 0.55], [0.8, 0.1, -0.55],
-    [-0.8, 0.1, 0.55], [-0.8, 0.1, -0.55],
-  ];
-  wheelPositions.forEach(([x, y, z]) => {
-    const wheel = new THREE.Mesh(wheelGeo, wheelMat);
-    wheel.rotation.z = Math.PI / 2;
-    wheel.position.set(x, y, z);
-    car.add(wheel);
-  });
-
-  [body, cabin].forEach((mesh) => {
-    const edges = new THREE.EdgesGeometry(mesh.geometry);
-    const line = new THREE.LineSegments(
-      edges,
-      new THREE.LineBasicMaterial({ color: ACCENT_COLOR, transparent: true, opacity: 0.5 })
-    );
-    line.position.copy(mesh.position);
-    car.add(line);
-  });
-
-  return car;
 }
 
 function buildGroundGrid() {
@@ -81,6 +31,28 @@ function buildGroundGrid() {
 function showFallback(canvasEl, fallbackEl) {
   if (canvasEl) canvasEl.style.display = 'none';
   if (fallbackEl) fallbackEl.style.display = 'block';
+}
+
+function showCanvas(canvasEl, fallbackEl) {
+  if (canvasEl) canvasEl.style.display = '';
+  if (fallbackEl) fallbackEl.style.display = 'none';
+}
+
+// Centers the loaded model on the X/Z origin, sits it on the y=0 ground
+// plane, and normalizes its scale so different source models frame
+// consistently regardless of their original real-world units.
+function normalizeModel(model) {
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z) || 1;
+  const scale = TARGET_SIZE / maxDim;
+  model.scale.setScalar(scale);
+
+  const scaledBox = new THREE.Box3().setFromObject(model);
+  const center = scaledBox.getCenter(new THREE.Vector3());
+  model.position.x -= center.x;
+  model.position.z -= center.z;
+  model.position.y -= scaledBox.min.y;
 }
 
 export function initHeroScene({ canvas, fallback, reduceMotion }) {
@@ -108,13 +80,17 @@ export function initHeroScene({ canvas, fallback, reduceMotion }) {
   key.position.set(3, 4, 2);
   scene.add(key);
 
+  const fill = new THREE.DirectionalLight(0xffffff, 0.5);
+  fill.position.set(-2, 2, -1);
+  scene.add(fill);
+
   const rim = new THREE.PointLight(ACCENT_COLOR, 1.4, 10);
   rim.position.set(-2, 1, -2);
   scene.add(rim);
 
-  scene.add(new THREE.AmbientLight(0x404048, 0.8));
+  scene.add(new THREE.AmbientLight(0x404048, 0.9));
 
-  const car = buildCar();
+  const car = new THREE.Group();
   scene.add(car);
   scene.add(buildGroundGrid());
 
@@ -183,5 +159,22 @@ export function initHeroScene({ canvas, fallback, reduceMotion }) {
 
     renderer.render(scene, camera);
   }
+
+  // Grid + lights render immediately; the car model pops in once it loads.
+  showCanvas(canvas, fallback);
   animate();
+
+  const loader = new GLTFLoader();
+  loader.setMeshoptDecoder(MeshoptDecoder);
+  loader.load(
+    CAR_MODEL_URL,
+    (gltf) => {
+      normalizeModel(gltf.scene);
+      car.add(gltf.scene);
+    },
+    undefined,
+    () => {
+      showFallback(canvas, fallback);
+    }
+  );
 }
