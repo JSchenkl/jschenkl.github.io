@@ -26,6 +26,25 @@ function updateSchoolGrade() {
 }
 updateSchoolGrade();
 
+function updateAge() {
+  const el = document.getElementById('age');
+  if (!el) return;
+
+  const BIRTH_YEAR = 2014;
+  const BIRTH_MONTH = 12; // 1-12
+  const BIRTH_DAY = 13;
+
+  const now = new Date();
+  let age = now.getFullYear() - BIRTH_YEAR;
+  const hadBirthdayThisYear =
+    now.getMonth() + 1 > BIRTH_MONTH ||
+    (now.getMonth() + 1 === BIRTH_MONTH && now.getDate() >= BIRTH_DAY);
+  if (!hadBirthdayThisYear) age -= 1;
+
+  el.textContent = age;
+}
+updateAge();
+
 function animateSkillBars() {
   const tiles = document.querySelectorAll('.skill-tile[data-level]');
   tiles.forEach((tile) => {
