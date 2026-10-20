@@ -4,8 +4,8 @@ import { loadCarModel, normalizeModel } from './car-model.js';
 const ACCENT_COLOR = 0xe10600;
 const CAR_SIZE = 0.4;
 const ORBIT_RADIUS = 0.6;
-const ORBIT_SPEED = 0.0014; // rad/ms
-const DRIFT_OFFSET = Math.PI / 6; // slide angle, for the drifting-donut look
+const ORBIT_SPEED = 0.0014; // rad/ms, base angular speed before wobble
+const DRIFT_OFFSET = Math.PI / 6; // base slide angle, for the drifting-donut look
 const SMOKE_INTERVAL_MS = 110;
 const SMOKE_LIFETIME_MS = 1500;
 
@@ -181,17 +181,40 @@ export function initAboutScene({ canvas, panel, onFail }) {
 
   let lastSmokeAt = 0;
   let carReady = false;
+  let theta = 0;
+  let lastFrameAt = performance.now();
 
   function animate(now) {
     requestAnimationFrame(animate);
+    const dt = now - lastFrameAt;
+    lastFrameAt = now;
     if (!visible || !running) return;
 
-    const theta = now * ORBIT_SPEED;
-    car.position.x = Math.sin(theta) * ORBIT_RADIUS;
-    car.position.z = Math.cos(theta) * ORBIT_RADIUS;
+    // Uneven angular speed (throttle/steering variation) instead of a
+    // constant rate, so the lap doesn't feel metronomic.
+    const speedWobble =
+      1 + 0.25 * Math.sin(now * 0.00026) + 0.1 * Math.sin(now * 0.00061 + 2.1);
+    theta += dt * ORBIT_SPEED * speedWobble;
+
+    // Radius wobble from several layered, non-harmonic frequencies — the
+    // loop never quite retraces itself, like a real imperfect donut.
+    const radius =
+      ORBIT_RADIUS +
+      0.09 * Math.sin(theta * 2.3 + 0.7) +
+      0.045 * Math.sin(theta * 5.1 - 1.4) +
+      0.02 * Math.sin(theta * 8.7 + 3.0);
+
+    // The circle's center also drifts slightly, like the car "walking"
+    // during the donut rather than staying perfectly planted.
+    const centerX = 0.05 * Math.sin(now * 0.00011 + 0.4);
+    const centerZ = 0.04 * Math.sin(now * 0.00014 + 2.6);
+
+    car.position.x = centerX + Math.sin(theta) * radius;
+    car.position.z = centerZ + Math.cos(theta) * radius;
 
     const travelAngle = Math.atan2(Math.sin(theta), Math.cos(theta)) + Math.PI / 2;
-    car.rotation.y = travelAngle + DRIFT_OFFSET;
+    const driftWobble = DRIFT_OFFSET + 0.14 * Math.sin(theta * 1.7 + 0.5);
+    car.rotation.y = travelAngle + driftWobble;
 
     if (carReady && now - lastSmokeAt > SMOKE_INTERVAL_MS) {
       lastSmokeAt = now;
