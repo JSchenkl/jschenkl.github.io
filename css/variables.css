@@ -37,4 +37,13 @@
   --z-nav: 100;
   --z-hero-canvas: 1;
   --z-hero-content: 2;
+  --z-ticker: 40;
+
+  --ticker-height: 86px;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --ticker-height: 60px;
+  }
 }

@@ -91,3 +91,21 @@ import('./hero-scene.js')
     if (canvas) canvas.style.display = 'none';
     if (fallback) fallback.style.display = 'block';
   });
+
+const tickerBar = document.getElementById('car-ticker');
+const tickerCanvas = document.getElementById('ticker-canvas');
+
+function hideTicker() {
+  if (tickerBar) tickerBar.style.display = 'none';
+  document.body.style.paddingBottom = '0';
+}
+
+if (reduceMotion) {
+  hideTicker();
+} else {
+  import('./ticker-scene.js')
+    .then(({ initTickerScene }) => {
+      initTickerScene({ canvas: tickerCanvas, bar: tickerBar, onFail: hideTicker });
+    })
+    .catch(hideTicker);
+}

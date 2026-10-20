@@ -49,13 +49,21 @@
 .btn-play {
   background: var(--color-racing-red);
   color: #fff;
-  box-shadow: 0 0 0 1px var(--color-racing-red-dim), 0 8px 24px -8px rgba(225, 6, 0, 0.6);
+  box-shadow:
+    0 0 0 1px var(--color-racing-red-dim),
+    0 0 18px 2px rgba(225, 6, 0, 0.45),
+    0 8px 28px -6px rgba(225, 6, 0, 0.7);
+  animation: btn-glow-pulse 2.2s ease-in-out infinite;
 }
 
 .btn-play:hover,
 .btn-play:focus-visible {
   background: #ff1a10;
-  box-shadow: 0 0 0 1px var(--color-racing-red), 0 8px 28px -6px rgba(225, 6, 0, 0.8);
+  animation-play-state: paused;
+  box-shadow:
+    0 0 0 1px var(--color-racing-red),
+    0 0 34px 8px rgba(225, 6, 0, 0.8),
+    0 10px 32px -4px rgba(225, 6, 0, 0.9);
 }
 
 .btn-ghost {
@@ -68,6 +76,7 @@
 .btn-ghost:focus-visible {
   border-color: var(--color-racing-red);
   color: var(--color-racing-red);
+  box-shadow: 0 0 18px 2px rgba(225, 6, 0, 0.35);
 }
 
 /* Repo / demo cards */

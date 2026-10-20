@@ -38,6 +38,22 @@
   transform: translateY(-4px);
 }
 
+/* Pulsing glow on primary Play buttons */
+@keyframes btn-glow-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px var(--color-racing-red-dim),
+      0 0 18px 2px rgba(225, 6, 0, 0.45),
+      0 8px 28px -6px rgba(225, 6, 0, 0.7);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px var(--color-racing-red-dim),
+      0 0 32px 10px rgba(225, 6, 0, 0.75),
+      0 8px 28px -6px rgba(225, 6, 0, 0.7);
+  }
+}
+
 /* Pulsing "LIVE" indicator dot */
 @keyframes live-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(31, 174, 90, 0.55); }

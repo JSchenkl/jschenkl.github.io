@@ -1,6 +1,5 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { loadCarModel, normalizeModel } from './car-model.js';
 
 const YAW_RANGE = 0.7;
 const PITCH_RANGE = 0.22;
@@ -12,7 +11,6 @@ const BOB_SPEED = 0.0014;
 const RIM_PULSE_AMOUNT = 0.5;
 const RIM_PULSE_SPEED = 0.0022;
 const ACCENT_COLOR = 0xe10600;
-const CAR_MODEL_URL = 'assets/models/bmw_m4_gt3.glb';
 const TARGET_SIZE = 2.6; // longest model dimension, in scene units, after normalization
 
 function isWebGLAvailable() {
@@ -40,23 +38,6 @@ function showFallback(canvasEl, fallbackEl) {
 function showCanvas(canvasEl, fallbackEl) {
   if (canvasEl) canvasEl.style.display = '';
   if (fallbackEl) fallbackEl.style.display = 'none';
-}
-
-// Centers the loaded model on the X/Z origin, sits it on the y=0 ground
-// plane, and normalizes its scale so different source models frame
-// consistently regardless of their original real-world units.
-function normalizeModel(model) {
-  const box = new THREE.Box3().setFromObject(model);
-  const size = box.getSize(new THREE.Vector3());
-  const maxDim = Math.max(size.x, size.y, size.z) || 1;
-  const scale = TARGET_SIZE / maxDim;
-  model.scale.setScalar(scale);
-
-  const scaledBox = new THREE.Box3().setFromObject(model);
-  const center = scaledBox.getCenter(new THREE.Vector3());
-  model.position.x -= center.x;
-  model.position.z -= center.z;
-  model.position.y -= scaledBox.min.y;
 }
 
 export function initHeroScene({ canvas, fallback, reduceMotion }) {
@@ -172,17 +153,12 @@ export function initHeroScene({ canvas, fallback, reduceMotion }) {
   showCanvas(canvas, fallback);
   animate();
 
-  const loader = new GLTFLoader();
-  loader.setMeshoptDecoder(MeshoptDecoder);
-  loader.load(
-    CAR_MODEL_URL,
-    (gltf) => {
-      normalizeModel(gltf.scene);
-      car.add(gltf.scene);
-    },
-    undefined,
-    () => {
+  loadCarModel()
+    .then((model) => {
+      normalizeModel(model, TARGET_SIZE);
+      car.add(model);
+    })
+    .catch(() => {
       showFallback(canvas, fallback);
-    }
-  );
+    });
 }
