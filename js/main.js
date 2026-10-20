@@ -109,3 +109,21 @@ if (reduceMotion) {
     })
     .catch(hideTicker);
 }
+
+const aboutSection = document.getElementById('about');
+const aboutCanvas = document.getElementById('about-canvas');
+const aboutPanel = document.querySelector('.about-visual');
+
+function hideAboutVisual() {
+  if (aboutSection) aboutSection.classList.add('no-visual');
+}
+
+if (reduceMotion) {
+  hideAboutVisual();
+} else {
+  import('./about-scene.js')
+    .then(({ initAboutScene }) => {
+      initAboutScene({ canvas: aboutCanvas, panel: aboutPanel, onFail: hideAboutVisual });
+    })
+    .catch(hideAboutVisual);
+}
