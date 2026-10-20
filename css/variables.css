@@ -1,0 +1,40 @@
+:root {
+  /* Racing HUD color tokens */
+  --color-bg-base: #0a0a0c;
+  --color-bg-panel: #141418;
+  --color-carbon-weave: #1c1c20;
+  --color-border-grey: #2e2e34;
+  --color-text-primary: #e8e8ec;
+  --color-text-muted: #8a8a92;
+  --color-racing-red: #e10600;
+  --color-racing-red-dim: #8f0400;
+  --color-signal-amber: #ffb000;
+  --color-success-green: #1fae5a;
+
+  /* Typography */
+  --font-display: 'Orbitron', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Rajdhani', 'Segoe UI', system-ui, sans-serif;
+
+  /* Spacing scale */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 4rem;
+  --space-2xl: 7rem;
+
+  /* Layout */
+  --max-content-width: 1180px;
+  --radius-sm: 2px;
+  --radius-md: 6px;
+
+  /* HUD motif */
+  --hud-corner-size: 18px;
+  --hud-corner-thickness: 2px;
+  --hud-corner-color: var(--color-border-grey);
+
+  /* Z-index scale */
+  --z-nav: 100;
+  --z-hero-canvas: 1;
+  --z-hero-content: 2;
+}

@@ -1,0 +1,222 @@
+/* HUD corner-bracket frame — reusable on hero, cards, skill tiles */
+.hud-frame {
+  --hud-corner-color: var(--color-border-grey);
+  position: relative;
+  background-image:
+    linear-gradient(to right, var(--hud-corner-color) var(--hud-corner-thickness), transparent 0),
+    linear-gradient(to bottom, var(--hud-corner-color) var(--hud-corner-thickness), transparent 0),
+    linear-gradient(to left, var(--hud-corner-color) var(--hud-corner-thickness), transparent 0),
+    linear-gradient(to bottom, var(--hud-corner-color) var(--hud-corner-thickness), transparent 0),
+    linear-gradient(to right, var(--hud-corner-color) var(--hud-corner-thickness), transparent 0),
+    linear-gradient(to top, var(--hud-corner-color) var(--hud-corner-thickness), transparent 0),
+    linear-gradient(to left, var(--hud-corner-color) var(--hud-corner-thickness), transparent 0),
+    linear-gradient(to top, var(--hud-corner-color) var(--hud-corner-thickness), transparent 0);
+  background-size:
+    var(--hud-corner-size) var(--hud-corner-thickness),
+    var(--hud-corner-thickness) var(--hud-corner-size),
+    var(--hud-corner-size) var(--hud-corner-thickness),
+    var(--hud-corner-thickness) var(--hud-corner-size),
+    var(--hud-corner-size) var(--hud-corner-thickness),
+    var(--hud-corner-thickness) var(--hud-corner-size),
+    var(--hud-corner-size) var(--hud-corner-thickness),
+    var(--hud-corner-thickness) var(--hud-corner-size);
+  background-position: top left, top left, top right, top right, bottom left, bottom left, bottom right, bottom right;
+  background-repeat: no-repeat;
+}
+
+.hud-frame:hover,
+.hud-frame:focus-within {
+  --hud-corner-color: var(--color-racing-red);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.75em 1.4em;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-play {
+  background: var(--color-racing-red);
+  color: #fff;
+  box-shadow: 0 0 0 1px var(--color-racing-red-dim), 0 8px 24px -8px rgba(225, 6, 0, 0.6);
+}
+
+.btn-play:hover,
+.btn-play:focus-visible {
+  background: #ff1a10;
+  box-shadow: 0 0 0 1px var(--color-racing-red), 0 8px 28px -6px rgba(225, 6, 0, 0.8);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-grey);
+}
+
+.btn-ghost:hover,
+.btn-ghost:focus-visible {
+  border-color: var(--color-racing-red);
+  color: var(--color-racing-red);
+}
+
+/* Repo / demo cards */
+.card {
+  background: var(--color-bg-panel);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  height: 100%;
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.card-desc {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  flex-grow: 1;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.card-meta .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+  display: inline-block;
+}
+
+.card-actions {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+/* Demo card specific */
+.demo-card {
+  position: relative;
+}
+
+.demo-card .live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success-green);
+  display: inline-block;
+  box-shadow: 0 0 8px var(--color-success-green);
+}
+
+.demo-card .live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-success-green);
+  margin-bottom: var(--space-xs);
+}
+
+.demo-card .tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+  margin-block: var(--space-xs);
+}
+
+.demo-card .tech-tags span {
+  font-size: 0.75rem;
+  padding: 0.25em 0.6em;
+  border: 1px solid var(--color-border-grey);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+}
+
+/* Skill RPM bars */
+.skill-tile {
+  background: var(--color-bg-panel);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.skill-tile-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.5em;
+}
+
+.skill-tile-name {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+}
+
+.skill-tile-level {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rpm-bar {
+  height: 8px;
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border-grey);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.rpm-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-racing-red) 0%, var(--color-racing-red) 70%, var(--color-signal-amber) 100%);
+  width: 0%;
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Loading skeleton */
+.skeleton-card {
+  background: var(--color-bg-panel);
+  padding: var(--space-md);
+  height: 160px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.04) 50%, transparent 70%);
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-card::after {
+    animation: none;
+    background: rgba(255, 255, 255, 0.02);
+  }
+}
